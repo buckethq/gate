@@ -1,0 +1,93 @@
+[
+  {
+    "id": "zero-config-cli-python-click",
+    "title": "Building a Zero-Config CLI in Python with Click",
+    "category": "Tutorial",
+    "date": "2026-04-02",
+    "readTime": "8 min",
+    "excerpt": "How I built a developer-friendly CLI that requires zero configuration to get started, using Click and a pinch of clever defaults.",
+    "tags": ["Python", "CLI", "Click", "DevTools", "Open Source"],
+    "content": [
+      {
+        "type": "p",
+        "text": "I've written a lot of CLIs. Some were internal tools, some became actual libraries people use. But they all had one thing in common at first: they were a pain to set up. Users would clone the repo, stare at the README, and give up before even running <code>--help</code>."
+      },
+      {
+        "type": "p",
+        "text": "So I built one with a different constraint: <strong>zero configuration to get started</strong>. Sensible defaults for everything. Optional config for power users. Here's how I did it with <a href='https://click.palletsprojects.com/'>Click</a>."
+      },
+      {
+        "type": "h2",
+        "id": "why-click",
+        "text": "Why Click?"
+      },
+      {
+        "type": "p",
+        "text": "Python has a few CLI frameworks — <code>argparse</code>, <code>typer</code>, <code>docopt</code>. I like Click because it strikes the right balance between expressiveness and simplicity. It's decorator-based, which means your code reads like a description of the CLI rather than implementation noise."
+      },
+      {
+        "type": "blockquote",
+        "text": "Simplicity is not about doing less. It's about doing the right things and doing them well."
+      },
+      {
+        "type": "code",
+        "lang": "python",
+        "text": "import click\n\n@click.command()\n@click.argument('name')\ndef greet(name):\n    \"\"\"A simple greeting CLI.\"\"\"\n    click.echo(f\"Hello, {name}!\")\n\nif __name__ == '__main__':\n    greet()"
+      },
+      {
+        "type": "h2",
+        "id": "zero-config",
+        "text": "Designing for Zero Configuration"
+      },
+      {
+        "type": "p",
+        "text": "The key insight is: <strong>most users won't configure anything</strong>. So your defaults have to be good enough to be useful out of the box. Here's how I think about defaults:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Detect the environment and adapt (dev vs. prod)",
+          "Read config from conventional locations (<code>~/.config/tool/config.toml</code>)",
+          "Cascade: CLI flag → env var → config file → default"
+        ]
+      },
+      {
+        "type": "code",
+        "lang": "python",
+        "text": "import click\nimport os\nimport tomllib\nfrom pathlib import Path\n\nCONFIG_PATH = Path.home() / \".config\" / \"mytool\" / \"config.toml\"\n\ndef load_config():\n    if CONFIG_PATH.exists():\n        with open(CONFIG_PATH, \"rb\") as f:\n            return tomllib.load(f)\n    return {}\n\n@click.command()\n@click.option('--output', default=None, help='Output directory')\ndef run(output):\n    config = load_config()\n    out = (\n        output\n        or os.environ.get(\"MYTOOL_OUTPUT\")\n        or config.get(\"output\")\n        or \"./dist\"\n    )\n    click.echo(f\"Output: {out}\")"
+      },
+      {
+        "type": "h2",
+        "id": "groups",
+        "text": "Organizing with Command Groups"
+      },
+      {
+        "type": "p",
+        "text": "As your CLI grows, you'll want subcommands. Click's <code>group</code> decorator makes this trivial, and it composes cleanly with the cascade pattern above."
+      },
+      {
+        "type": "code",
+        "lang": "python",
+        "text": "@click.group()\n@click.pass_context\ndef cli(ctx):\n    \"\"\"MyTool — a zero-config developer CLI.\"\"\"\n    ctx.ensure_object(dict)\n    ctx.obj['config'] = load_config()\n\n@cli.command()\n@click.pass_context\ndef build(ctx):\n    \"\"\"Build the project.\"\"\"\n    click.echo(\"Building...\")\n\n@cli.command()\n@click.pass_context\ndef deploy(ctx):\n    \"\"\"Deploy to production.\"\"\"\n    click.echo(\"Deploying...\")"
+      },
+      {
+        "type": "h2",
+        "id": "shipping",
+        "text": "Shipping It"
+      },
+      {
+        "type": "p",
+        "text": "Package it with a <code>pyproject.toml</code> entry point so users can install via <code>pip install mytool</code> and get the command globally:"
+      },
+      {
+        "type": "code",
+        "lang": "toml",
+        "text": "[project.scripts]\nmytool = \"mytool.cli:cli\""
+      },
+      {
+        "type": "p",
+        "text": "The best CLIs feel obvious. Users shouldn't have to read your docs to get started. Every time you're about to ask the user for something, ask yourself if you can figure it out instead."
+      }
+    ]
+  }
+]

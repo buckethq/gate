@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="All blogs from BucketHQ — thoughts on code, architecture, and building in public.">
+  <title>Blogs — BucketHQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1', 'primary-dim': '#4f46e5', 'on-primary': '#ffffff',
+            surface: '#ffffff', 'surface-container-lowest': '#f8fafc',
+            'surface-container-low': '#f1f5f9', 'surface-container-high': '#e2e8f0',
+            'on-background': '#0f172a', 'on-surface-variant': '#64748b', 'outline-variant': '#c7d2fe',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-background antialiased selection:bg-primary/20">
+
+  <div id="nav-placeholder"></div>
+
+  <main class="pt-24 pb-24">
+    <section class="max-w-4xl mx-auto px-6">
+      <a href="index.html" class="inline-flex items-center text-sm text-on-surface-variant hover:text-primary transition mb-8">← Back to Home</a>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-on-background mb-4">All Articles</h1>
+      <p class="text-on-surface-variant text-lg font-light mb-12">Thoughts on code, architecture, and shipping software — updated regularly.</p>
+
+      <!-- Loading state -->
+      <div id="blogs-loading" class="space-y-6">
+        <div class="skeleton h-32 rounded-xl"></div>
+        <div class="skeleton h-32 rounded-xl"></div>
+        <div class="skeleton h-32 rounded-xl"></div>
+      </div>
+
+      <!-- Blog list -->
+      <div id="blogs-list" class="hidden space-y-6"></div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script type="module">
+    import { loadComponent, initGlobal } from './js/main.js';
+    import { fmt, badge } from './js/utils.js';
+    
+    async function loadAllBlogs() {
+      const loading = document.getElementById('blogs-loading');
+      const list = document.getElementById('blogs-list');
+      
+      try {
+        const res = await fetch('blogs.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const posts = await res.json();
+        
+        list.innerHTML = posts.map(post => `
+          <article class="p-6 rounded-xl border border-outline-variant/20 hover:border-primary/30 bg-surface-container-lowest transition group cursor-pointer" 
+                   onclick="location.href='blog-post.html?id=${post.id}'">
+            <div class="flex items-center gap-3 text-xs text-on-surface-variant mb-3">
+              ${badge(post.category)}
+              <time>${fmt(post.date, { month: 'long' })}</time>
+              <span>•</span>
+              <span>${post.readTime} read</span>
+            </div>
+            <h2 class="text-xl font-bold tracking-tight text-on-background group-hover:text-primary transition mb-2">${post.title}</h2>
+            <p class="text-on-surface-variant font-light leading-relaxed">${post.excerpt}</p>
+            <div class="flex flex-wrap gap-2 mt-4">
+              ${post.tags?.map(t => `<span class="px-2 py-0.5 text-xs rounded bg-surface-container-high text-on-surface-variant">${t}</span>`).join('') || ''}
+            </div>
+          </article>
+        `).join('');
+        
+        loading.classList.add('hidden');
+        list.classList.remove('hidden');
+      } catch (err) {
+        console.error('Failed to load blogs:', err);
+        loading.innerHTML = '<p class="text-on-surface-variant">Failed to load articles. Please try again later.</p>';
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadComponent('#nav-placeholder', 'components/nav.html');
+      await loadComponent('#footer-placeholder', 'components/footer.html');
+      initGlobal();
+      loadAllBlogs();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Loading… — BucketHQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1', 'primary-dim': '#4f46e5', 'on-primary': '#ffffff',
+            surface: '#ffffff', 'surface-container-lowest': '#f8fafc',
+            'surface-container-low': '#f1f5f9', 'surface-container-high': '#e2e8f0',
+            'on-background': '#0f172a', 'on-surface-variant': '#64748b', 'outline-variant': '#c7d2fe',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Lora', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-background antialiased selection:bg-primary/20">
+
+  <div id="read-progress" style="width:0%"></div>
+  <div id="nav-placeholder"></div>
+
+  <main class="pt-28 pb-24">
+    <!-- 404 state -->
+    <div id="not-found" class="hidden max-w-2xl mx-auto px-6 text-center py-24">
+      <div class="text-6xl mb-6">🕳️</div>
+      <h1 class="text-3xl font-extrabold tracking-tighter mb-3">Post not found</h1>
+      <p class="text-on-surface-variant mb-8">This article doesn't exist or may have been removed.</p>
+      <a href="blogs.html" class="bg-primary text-on-primary px-6 py-3 rounded-lg font-medium hover:bg-primary-dim transition">← Browse all blogs</a>
+    </div>
+
+    <div id="content-wrap" class="max-w-7xl mx-auto px-6">
+      <a href="blogs.html" class="inline-flex items-center text-sm text-on-surface-variant hover:text-primary transition mb-10">← All Articles</a>
+
+      <!-- Skeleton while loading -->
+      <div id="skeleton" class="flex gap-16">
+        <div class="flex-1 min-w-0 max-w-2xl space-y-5">
+          <div class="skeleton h-5 w-40"></div>
+          <div class="skeleton h-12 w-full"></div>
+          <div class="skeleton h-12 w-3/4"></div>
+          <div class="skeleton h-4 w-full mt-4"></div>
+          <div class="skeleton h-4 w-5/6"></div>
+          <div class="skeleton h-4 w-4/5"></div>
+        </div>
+      </div>
+
+      <!-- Real content -->
+      <div id="article-wrap" class="hidden flex gap-16 items-start">
+        <article class="flex-1 min-w-0 max-w-2xl">
+          <div id="meta" class="flex flex-wrap items-center gap-3 text-xs text-on-surface-variant mb-6"></div>
+          <h1 id="post-title" class="text-4xl md:text-5xl font-extrabold tracking-tighter text-on-background mb-6 leading-[1.1]"></h1>
+
+          <!-- Author -->
+          <div class="flex items-center gap-3 mb-10 pb-10 border-b border-outline-variant/30">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-base font-bold text-primary">Z</div>
+            <div>
+              <div class="text-sm font-semibold text-on-background">Zack</div>
+              <div class="text-xs text-on-surface-variant">Building in public @ BucketHQ</div>
+            </div>
+            <button onclick="copyLink()" id="share-btn" class="ml-auto text-xs px-3 py-1.5 rounded-md bg-surface-container-low border border-outline-variant/30 hover:bg-surface-container-high transition text-on-surface-variant">Share</button>
+          </div>
+
+          <div id="post-body" class="prose"></div>
+
+          <!-- Tags -->
+          <div id="post-tags" class="mt-12 pt-8 border-t border-outline-variant/30 flex flex-wrap gap-2"></div>
+
+          <!-- Author card -->
+          <div class="mt-10 p-6 rounded-xl bg-surface-container-lowest border border-outline-variant/20 flex gap-5 items-center">
+            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-xl font-bold text-primary shrink-0">Z</div>
+            <div>
+              <div class="font-bold text-on-background mb-0.5">Zack</div>
+              <p class="text-sm text-on-surface-variant font-light">Developer building in public. I write about code, architecture, and shipping things that actually work.</p>
+              <a href="index.html#contact" class="text-xs text-primary font-medium mt-2 inline-block hover:opacity-75 transition">Get in touch →</a>
+            </div>
+          </div>
+
+          <!-- Related -->
+          <div class="mt-14">
+            <h2 class="text-xl font-bold tracking-tight text-on-background mb-6">More Articles</h2>
+            <div id="related" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </div>
+        </article>
+
+        <!-- TOC sidebar -->
+        <aside class="hidden xl:block w-60 shrink-0 sticky top-28 self-start">
+          <div class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-4">On this page</div>
+          <nav id="toc" class="space-y-2"></nav>
+          <div class="mt-10 pt-8 border-t border-outline-variant/20">
+            <div class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3">Share</div>
+            <div class="flex gap-2">
+              <a id="share-x" href="#" target="_blank" class="p-2 rounded-lg bg-surface-container-low border border-outline-variant/20 hover:bg-surface-container-high transition text-on-surface-variant" title="Share on X">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <button onclick="copyLink()" title="Copy link" class="p-2 rounded-lg bg-surface-container-low border border-outline-variant/20 hover:bg-surface-container-high transition text-on-surface-variant text-sm">🔗</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script type="module">
+    import { loadComponent } from './js/main.js';
+    import { copyLink } from './js/utils.js';
+    import { initBlogPost } from './js/page-blog.js';
+    
+    // Expose copyLink globally for inline onclick
+    window.copyLink = copyLink;
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadComponent('#nav-placeholder', 'components/nav.html');
+      await loadComponent('#footer-placeholder', 'components/footer.html');
+      initBlogPost();
+    });
+  </script>
+</body>
+</html>

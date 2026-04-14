@@ -1,0 +1,42 @@
+[
+  {
+    "id": "project-cli",
+    "name": "project-cli",
+    "shortDescription": "A simple CLI with short description of what this Python project does.",
+    "longDescription": "A powerful command-line interface tool built with Python that streamlines developer workflows. Designed for speed, extensibility, and developer experience.",
+    "tags": ["Python", "Framework/Lib", "CLI / API / Tool"],
+    "stars": "1.2k",
+    "links": {
+      "demo": "#",
+      "source": "https://github.com/buckethq/project-cli"
+    },
+    "featured": true,
+    "features": [
+      "Key feature or capability of the project",
+      "Another important feature or benefit",
+      "Additional highlight or use case"
+    ],
+    "content": [
+      { "type": "p", "text": "<strong>project-cli</strong> is a production-ready CLI framework that helps you build powerful command-line tools with minimal boilerplate. It handles argument parsing, configuration, logging, and plugin architecture out of the box." },
+      { "type": "h2", "text": "Installation", "id": "installation" },
+      { "type": "code", "text": "pip install project-cli\n\n# Or from source:\ngit clone https://github.com/buckethq/project-cli\ncd project-cli && pip install -e ." },
+      { "type": "h2", "text": "Quick Start", "id": "quick-start" },
+      { "type": "p", "text": "Create a new CLI project in seconds:" },
+      { "type": "code", "text": "project-cli init my-tool\ncd my-tool\nproject-cli run" },
+      { "type": "h3", "text": "Configuration", "id": "configuration" },
+      { "type": "p", "text": "Use a simple YAML or JSON config file to customize behavior:" },
+      { "type": "code", "text": "# config.yaml\nproject:\n  name: my-tool\n  version: 0.1.0\ncommands:\n  - name: build\n    handler: ./handlers/build.py" },
+      { "type": "h2", "text": "Key Features", "id": "features" },
+      { "type": "ul", "items": [
+        "🔌 Plugin architecture for extensibility",
+        "⚡ Zero-config argument parsing with type validation",
+        "📦 Built-in support for config files (YAML/JSON/TOML)",
+        "🎨 Colored output with emoji support",
+        "🧪 Testing utilities for CLI commands"
+      ]},
+      { "type": "blockquote", "text": "Built for developers who want to ship tools, not fight frameworks." },
+      { "type": "h2", "text": "Contributing", "id": "contributing" },
+      { "type": "p", "text": "Contributions are welcome! Check out the <a href='https://github.com/buckethq/project-cli'>source repo</a> for issues, PRs, and the contributor guide." }
+    ]
+  }
+]
